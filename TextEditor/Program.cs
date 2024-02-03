@@ -1,4 +1,3 @@
-﻿using TextEditor;
-
-Editor textEditor = new();
-textEditor.Run();
+﻿
+using var game = new TextEditor.Game1();
+game.Run();

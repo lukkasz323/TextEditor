@@ -3,21 +3,25 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace TextEditor;
-public class Game1 : Game
+public class Engine : Game
 {
-    private GraphicsDeviceManager _graphics;
+    private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    private SpriteFont _font;
 
-    public Game1()
+    public Engine()
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
+
         IsMouseVisible = true;
+        Window.IsBorderless = true;
     }
 
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
+        _font = Content.Load<SpriteFont>("font");
 
         base.Initialize();
     }
@@ -41,9 +45,14 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+        GraphicsDevice.Clear(new Color(20, 20, 20));
 
         // TODO: Add your drawing code here
+        _spriteBatch.Begin();
+
+        _spriteBatch.DrawString(_font, "aha", Vector2.One, Color.Black);
+
+        _spriteBatch.End();
 
         base.Draw(gameTime);
     }

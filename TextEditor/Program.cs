@@ -1,3 +1,2 @@
-﻿
-using var game = new TextEditor.Game1();
-game.Run();
+﻿using var editor = new TextEditor.Engine();
+editor.Run();

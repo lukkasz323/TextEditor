@@ -33,19 +33,20 @@ public class Engine : Game
         _blankTexture.SetData(new Color[] { Color.White });
 
         InitEditor();
-        
 
         base.Initialize();
 
         void InitEditor()
         {
+            Point origin = new(8, 8);
+            int textSpacing = 8;
             int widthSpacing = 8;
             int widthOffset = 0;
             foreach (Button button in _editor.Dropdowns)
             {
-                button.Body = new Rectangle(widthOffset, button.Body.Y, (int)button.TextSize.X + widthSpacing, (int)button.TextSize.Y);
+                button.Body = new Rectangle(widthOffset + origin.X, button.Body.Y + origin.Y, (int)button.TextSize.X + widthSpacing, (int)button.TextSize.Y);
 
-                widthOffset += (int)button.TextSize.X + widthSpacing;
+                widthOffset += (int)button.TextSize.X + textSpacing + widthSpacing;
             }
         }
     }
@@ -72,50 +73,44 @@ public class Engine : Game
         // TODO: Add your drawing code here
         _spriteBatch.Begin();
 
-        //DrawOutline(4, 4, 32, 16, Color.White);
-        //_spriteBatch.DrawString(_font, "File", new Vector2(6, 4), Color.Blue);
-        //_spriteBatch.Draw(_font.Texture, new Rectangle(32, 32, _font.Texture.Width, _font.Texture.Height), Color.White);
         DrawDropdowns();
-        DrawFPS();
+        DrawFPS(new Vector2(Window.ClientBounds.Width - 24, Window.ClientBounds.Height - 20));
 
         _spriteBatch.End();
 
         base.Draw(gameTime);
 
-        void DrawFill(int x, int y, int w, int h, Color color) => 
-            _spriteBatch.Draw(_blankTexture, new Rectangle(x, y, w, h), color);
+        void DrawFill(Rectangle rect, Color color) => 
+            _spriteBatch.Draw(_blankTexture, new Rectangle(rect.X, rect.Y, rect.Width, rect.Height), color);
 
-        void DrawOutline(int x, int y, int w, int h, Color color)
+        void DrawOutline(Rectangle rect, Color color)
         {
-            DrawFill(x, y, w, 1, color);
-            DrawFill(x, y + h - 1, w, 1, color);
-            DrawFill(x, y + 1, 1, h - 2, color);
-            DrawFill(x + w - 1, y + 1, 1, h - 2, color);
+            DrawFill(rect.X, rect.Y, rect.Width, 1, color);
+            DrawFill(rect.X, rect.Y + rect.Height - 1, rect.Width, 1, color);
+            DrawFill(rect.X, rect.Y + 1, 1, rect.Height - 2, color);
+            DrawFill(rect.X + rect.Width - 1, rect.Y + 1, 1, rect.Height - 2, color);
         }
 
         void DrawDropdowns()
         {
-            //int widthOffset = 4;
-            //foreach (string label in _editor.Dropdowns)
-            //{
-            //    Vector2 labelSize = _font.MeasureString(label);
-            //    _spriteBatch.DrawString(_font, label, new Vector2(x + widthOffset, y), Color.White);
-
-            //    widthOffset += (int)labelSize.X + 8;
-            //}
             foreach (Button button in _editor.Dropdowns)
             {
-                _spriteBatch.DrawString(_font, button.Text, new Vector2((int)button.Body.X + 4, (int)button.Body.Y), Color.White);
+                _spriteBatch.DrawString(_font, button.Text, new Vector2(button.Body.X + 4, button.Body.Y), Color.White);
                 if (button.IsHovered)
                 {
-                    DrawOutline(button.Body.X, button.Body.Y, button.Body.Width, button.Body.Height, Color.White);
+                    DrawOutline(button.Body, Color.White);
                 }
             }
         }
 
-        void DrawFPS()
+        void DrawDetails()
         {
-            _spriteBatch.DrawString(_font, $"{(int)(3600 * gameTime.ElapsedGameTime.TotalSeconds)}", new Vector2(700, 400), Color.Beige);
+            DrawFill()
+        }
+
+        void DrawFPS(Vector2 origin)
+        {
+            _spriteBatch.DrawString(_font, $"{(int)(3600 * gameTime.ElapsedGameTime.TotalSeconds)}", origin, Color.Beige);
         }
     }
 }

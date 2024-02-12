@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TextEditor.Core;
+using TextEditor.Scene;
 
 namespace TextEditor;
 
@@ -11,8 +11,8 @@ public class Engine : Game
     private SpriteBatch _spriteBatch;
     private SpriteFont _font;
     private Texture2D _blankTexture;
+    private Editor _editor;
     private Color _backgroundColor = new Color(20, 20, 20);
-    private readonly Editor _editor = new();
 
     public Engine()
     {
@@ -27,10 +27,27 @@ public class Engine : Game
     {
         // TODO: Add your initialization logic here
         _font = Content.Load<SpriteFont>("font");
+        _editor = new(_font);
+
         _blankTexture = new Texture2D(GraphicsDevice, 1, 1);
         _blankTexture.SetData(new Color[] { Color.White });
 
+        InitEditor();
+        
+
         base.Initialize();
+
+        void InitEditor()
+        {
+            int widthSpacing = 8;
+            int widthOffset = 0;
+            foreach (Button button in _editor.Dropdowns)
+            {
+                button.Body = new Rectangle(widthOffset, button.Body.Y, (int)button.TextSize.X + widthSpacing, (int)button.TextSize.Y);
+
+                widthOffset += (int)button.TextSize.X + widthSpacing;
+            }
+        }
     }
 
     protected override void LoadContent()
@@ -42,10 +59,8 @@ public class Engine : Game
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
-
-        // TODO: Add your update logic here
+        KeyboardState keyboardState = Keyboard.GetState();
+        if (keyboardState.IsKeyDown(Keys.Escape)) { Exit(); }
 
         base.Update(gameTime);
     }
@@ -60,7 +75,7 @@ public class Engine : Game
         //DrawOutline(4, 4, 32, 16, Color.White);
         //_spriteBatch.DrawString(_font, "File", new Vector2(6, 4), Color.Blue);
         //_spriteBatch.Draw(_font.Texture, new Rectangle(32, 32, _font.Texture.Width, _font.Texture.Height), Color.White);
-        DrawDropdowns(0, 0);
+        DrawDropdowns();
         DrawFPS();
 
         _spriteBatch.End();
@@ -78,15 +93,23 @@ public class Engine : Game
             DrawFill(x + w - 1, y + 1, 1, h - 2, color);
         }
 
-        void DrawDropdowns(int x, int y)
+        void DrawDropdowns()
         {
-            int widthOffset = 4;
-            foreach (string label in _editor.Dropdowns)
-            {
-                Vector2 labelSize = _font.MeasureString(label);
-                _spriteBatch.DrawString(_font, label, new Vector2(x + widthOffset, y), Color.White);
+            //int widthOffset = 4;
+            //foreach (string label in _editor.Dropdowns)
+            //{
+            //    Vector2 labelSize = _font.MeasureString(label);
+            //    _spriteBatch.DrawString(_font, label, new Vector2(x + widthOffset, y), Color.White);
 
-                widthOffset += (int)labelSize.X + 8;
+            //    widthOffset += (int)labelSize.X + 8;
+            //}
+            foreach (Button button in _editor.Dropdowns)
+            {
+                _spriteBatch.DrawString(_font, button.Text, new Vector2((int)button.Body.X + 4, (int)button.Body.Y), Color.White);
+                if (button.IsHovered)
+                {
+                    DrawOutline(button.Body.X, button.Body.Y, button.Body.Width, button.Body.Height, Color.White);
+                }
             }
         }
 

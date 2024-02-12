@@ -38,7 +38,7 @@ public class Engine : Game
 
         void InitEditor()
         {
-            Point origin = new(8, 8);
+            Point origin = new(8, 3);
             int textSpacing = 8;
             int widthSpacing = 8;
             int widthOffset = 0;
@@ -73,6 +73,7 @@ public class Engine : Game
         // TODO: Add your drawing code here
         _spriteBatch.Begin();
 
+        DrawDetails();
         DrawDropdowns();
         DrawFPS(new Vector2(Window.ClientBounds.Width - 24, Window.ClientBounds.Height - 20));
 
@@ -85,10 +86,10 @@ public class Engine : Game
 
         void DrawOutline(Rectangle rect, Color color)
         {
-            DrawFill(rect.X, rect.Y, rect.Width, 1, color);
-            DrawFill(rect.X, rect.Y + rect.Height - 1, rect.Width, 1, color);
-            DrawFill(rect.X, rect.Y + 1, 1, rect.Height - 2, color);
-            DrawFill(rect.X + rect.Width - 1, rect.Y + 1, 1, rect.Height - 2, color);
+            DrawFill(new Rectangle(rect.X, rect.Y, rect.Width, 1), color);
+            DrawFill(new Rectangle(rect.X, rect.Y + rect.Height - 1, rect.Width, 1), color);
+            DrawFill(new Rectangle(rect.X, rect.Y + 1, 1, rect.Height - 2), color);
+            DrawFill(new Rectangle(rect.X + rect.Width - 1, rect.Y + 1, 1, rect.Height - 2), color);
         }
 
         void DrawDropdowns()
@@ -105,7 +106,8 @@ public class Engine : Game
 
         void DrawDetails()
         {
-            DrawFill()
+            DrawFill(new Rectangle(0, 24, Window.ClientBounds.Width, 1), Color.White);
+            DrawFill(new Rectangle(0, Window.ClientBounds.Height - 24, Window.ClientBounds.Width, 1), Color.White);
         }
 
         void DrawFPS(Vector2 origin)

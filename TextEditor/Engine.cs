@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Diagnostics;
 using TextEditor.Scene;
 
 namespace TextEditor;
@@ -12,7 +14,7 @@ public class Engine : Game
     private SpriteFont _font;
     private Texture2D _blankTexture;
     private Editor _editor;
-    private Color _backgroundColor = new Color(20, 20, 20);
+    private Color _backgroundColor = new(20, 20, 20);
 
     public Engine()
     {
@@ -63,17 +65,39 @@ public class Engine : Game
         KeyboardState keyboardState = Keyboard.GetState();
         if (keyboardState.IsKeyDown(Keys.Escape)) { Exit(); }
 
+        foreach (Keys key in keyboardState.GetPressedKeys())
+        {
+            if ((int)key >= 65 && (int)key <= 90)
+            {
+                if (keyboardState.CapsLock || keyboardState.IsKeyDown(Keys.LeftShift))
+                {
+                    _editor.Content.Append(key);
+                }
+                else
+                {
+                    _editor.Content.Append(key.ToString().ToLower());
+                }
+            }
+        }
+        Debug.WriteLine("");
+        
+        //for (int i = 65; i < 90; i++)
+        //{
+        //    //Debug.WriteLine((Keys)i);
+        //}
+
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(new Color(20, 20, 20));
+        GraphicsDevice.Clear(_backgroundColor);
 
         // TODO: Add your drawing code here
         _spriteBatch.Begin();
 
         DrawDetails();
+        DrawEditorContent();
         DrawDropdowns();
         DrawFPS(new Vector2(Window.ClientBounds.Width - 24, Window.ClientBounds.Height - 20));
 
@@ -108,6 +132,11 @@ public class Engine : Game
         {
             DrawFill(new Rectangle(0, 24, Window.ClientBounds.Width, 1), Color.White);
             DrawFill(new Rectangle(0, Window.ClientBounds.Height - 24, Window.ClientBounds.Width, 1), Color.White);
+        }
+
+        void DrawEditorContent()
+        {
+            _spriteBatch.DrawString(_font, _editor.Content, new Vector2(16, 36), Color.White);
         }
 
         void DrawFPS(Vector2 origin)

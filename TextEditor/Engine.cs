@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using TextEditor.Scene;
 
@@ -9,6 +10,91 @@ namespace TextEditor;
 
 public class Engine : Game
 {
+    private static readonly IReadOnlyDictionary<Keys, char> s_charByKey = new Dictionary<Keys, char>
+    {
+        [Keys.A] = 'a',
+        [Keys.B] = 'b',
+        [Keys.C] = 'c',
+        [Keys.D] = 'd',
+        [Keys.E] = 'e',
+        [Keys.F] = 'f',
+        [Keys.G] = 'g',
+        [Keys.H] = 'h',
+        [Keys.I] = 'i',
+        [Keys.J] = 'j',
+        [Keys.K] = 'k',
+        [Keys.L] = 'l',
+        [Keys.M] = 'm',
+        [Keys.N] = 'n',
+        [Keys.O] = 'o',
+        [Keys.P] = 'p',
+        [Keys.Q] = 'q',
+        [Keys.R] = 'r',
+        [Keys.S] = 's',
+        [Keys.T] = 't',
+        [Keys.U] = 'u',
+        [Keys.V] = 'v',
+        [Keys.W] = 'w',
+        [Keys.X] = 'x',
+        [Keys.Y] = 'y',
+        [Keys.Z] = 'z',
+        [Keys.D1] = '1',
+        [Keys.D2] = '2',
+        [Keys.D3] = '3',
+        [Keys.D4] = '4',
+        [Keys.D5] = '5',
+        [Keys.D6] = '6',
+        [Keys.D7] = '7',
+        [Keys.D8] = '8',
+        [Keys.D9] = '9',
+        [Keys.D0] = '0',
+        [Keys.OemTilde] = '`',
+        [Keys.OemComma] = ',',
+        [Keys.OemPeriod] = '.',
+    };
+    private static readonly IReadOnlyDictionary<char, char> s_alternateCharByPrimaryChar = new Dictionary<char, char>
+    {
+        ['a'] = 'A',
+        ['b'] = 'B',
+        ['c'] = 'C',
+        ['d'] = 'D',
+        ['e'] = 'E',
+        ['f'] = 'F',
+        ['g'] = 'G',
+        ['h'] = 'H',
+        ['i'] = 'I',
+        ['j'] = 'J',
+        ['k'] = 'K',
+        ['l'] = 'L',
+        ['m'] = 'M',
+        ['n'] = 'N',
+        ['o'] = 'O',
+        ['p'] = 'P',
+        ['q'] = 'Q',
+        ['r'] = 'R',
+        ['s'] = 'S',
+        ['t'] = 'T',
+        ['u'] = 'U',
+        ['v'] = 'V',
+        ['w'] = 'W',
+        ['x'] = 'X',
+        ['y'] = 'Y',
+        ['z'] = 'Z',
+        ['1'] = '!',
+        ['2'] = '@',
+        ['3'] = '#',
+        ['4'] = '$',
+        //['5'] = '%',
+        ['6'] = '^',
+        ['7'] = '&',
+        ['8'] = '*',
+        ['9'] = '(',
+        ['0'] = ')',
+        ['`'] = '~',
+        [','] = '<',
+        ['.'] = '>',
+    };
+
     private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private SpriteFont _font;
@@ -67,24 +153,34 @@ public class Engine : Game
 
         foreach (Keys key in keyboardState.GetPressedKeys())
         {
-            if ((int)key >= 65 && (int)key <= 90)
+            Debug.Write(key);
+            if (s_charByKey.ContainsKey(key))
             {
-                if (keyboardState.CapsLock || keyboardState.IsKeyDown(Keys.LeftShift))
+                if (keyboardState.IsKeyDown(Keys.LeftShift) && s_alternateCharByPrimaryChar.ContainsKey(s_charByKey[key]))
                 {
-                    _editor.Content.Append(key);
+                    if (keyboardState.CapsLock)
+                    {
+                        _editor.Content.Append(char.ToLower(s_alternateCharByPrimaryChar[s_charByKey[key]]));
+                    }
+                    else
+                    {
+                        _editor.Content.Append(s_alternateCharByPrimaryChar[s_charByKey[key]]);
+                    }
                 }
                 else
                 {
-                    _editor.Content.Append(key.ToString().ToLower());
+                    if (keyboardState.CapsLock)
+                    {
+                        _editor.Content.Append(char.ToUpper(s_charByKey[key]));
+                    }
+                    else
+                    {
+                        _editor.Content.Append(s_charByKey[key]);
+                    }
                 }
             }
         }
         Debug.WriteLine("");
-        
-        //for (int i = 65; i < 90; i++)
-        //{
-        //    //Debug.WriteLine((Keys)i);
-        //}
 
         base.Update(gameTime);
     }

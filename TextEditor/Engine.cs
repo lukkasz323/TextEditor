@@ -3,8 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using TextEditor.Scene;
 
 namespace TextEditor;
@@ -13,6 +11,7 @@ public class Engine : Game
 {
     private static readonly IReadOnlyDictionary<Keys, char> s_charByKey = new Dictionary<Keys, char>
     {
+        [Keys.Space] = ' ',
         [Keys.A] = 'a',
         [Keys.B] = 'b',
         [Keys.C] = 'c',
@@ -143,35 +142,37 @@ public class Engine : Game
 
         if (keyboardState.IsKeyDown(Keys.Enter)) 
         {
-            _editor.Content.Append(Environment.NewLine);
+            _editor.CurrentTab.Content.Append(Environment.NewLine);
         }
 
         foreach (Keys key in pressedKeys)
         {
             if (s_charByKey.ContainsKey(key))
             {
+                char charToAppend;
                 if (keyboardState.IsKeyDown(Keys.LeftShift) && s_alternateCharByPrimaryChar.ContainsKey(s_charByKey[key]))
                 {
                     if (keyboardState.CapsLock)
                     {
-                        _editor.Content.Append(char.ToLower(s_alternateCharByPrimaryChar[s_charByKey[key]]));
+                        charToAppend = char.ToLower(s_alternateCharByPrimaryChar[s_charByKey[key]]);
                     }
                     else
                     {
-                        _editor.Content.Append(s_alternateCharByPrimaryChar[s_charByKey[key]]);
+                        charToAppend = s_alternateCharByPrimaryChar[s_charByKey[key]];
                     }
                 }
                 else
                 {
                     if (keyboardState.CapsLock)
                     {
-                        _editor.Content.Append(char.ToUpper(s_charByKey[key]));
+                        charToAppend = char.ToUpper(s_charByKey[key]);
                     }
                     else
                     {
-                        _editor.Content.Append(s_charByKey[key]);
+                        charToAppend = s_charByKey[key];
                     }
                 }
+                _editor.CurrentTab.Content.Append(charToAppend);
             }
         }
 
@@ -180,7 +181,6 @@ public class Engine : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        Debug.WriteLine(_editor.Content);
         GraphicsDevice.Clear(_backgroundColor);
 
         // TODO: Add your drawing code here
@@ -226,7 +226,7 @@ public class Engine : Game
 
         void DrawEditorContent()
         {
-            _spriteBatch.DrawString(_font, _editor.Content, new Vector2(16, 36), Color.White);
+            _spriteBatch.DrawString(_font, _editor.CurrentTab.Content, new Vector2(16, 36), Color.White);
         }
 
         void DrawFPS(Vector2 origin)

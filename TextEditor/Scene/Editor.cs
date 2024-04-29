@@ -1,14 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace TextEditor.Scene;
 
 internal class Editor
 {
+
+    internal List<Tab> Tabs = new();
+    internal int CurrentTabNumber { get; set; }
     internal List<Button> Dropdowns { get; }
-    internal StringBuilder Content { get; set; } = new();
+
+    internal Tab CurrentTab => Tabs[CurrentTabNumber];
     
     internal Editor(SpriteFont spriteFont)
     {
@@ -19,6 +23,10 @@ internal class Editor
             new(spriteFont, "About"),
         };
         RelocateDropdowns();
+
+        string cacheDirectoryName = "editor_cache";
+        DirectoryInfo cacheDirectory = Directory.CreateDirectory(cacheDirectoryName);
+        LoadCachedTabs(cacheDirectory);
 
         void RelocateDropdowns()
         {
@@ -33,5 +41,17 @@ internal class Editor
                 widthOffset += (int)button.TextSize.X + textSpacing + widthSpacing;
             }
         }
+
+        void LoadCachedTabs(DirectoryInfo cacheDirectory)
+        {
+            FileInfo[] cachedFiles = cacheDirectory.GetFiles();
+            foreach (FileInfo cachedFile in cachedFiles)
+            {
+                string content = File.ReadAllText(cachedFile.FullName);
+                Tabs.Add(new Tab(content));
+            }
+        }
+
+
     }
 }

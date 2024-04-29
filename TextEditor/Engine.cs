@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using TextEditor.Scene;
 
 namespace TextEditor;
@@ -116,6 +117,7 @@ public class Engine : Game
         // TODO: Add your initialization logic here
         _font = Content.Load<SpriteFont>("font");
         _editor = new(_font);
+        Exiting += OnExiting;
 
         _blankTexture = new Texture2D(GraphicsDevice, 1, 1);
         _blankTexture.SetData(new Color[] { Color.White });
@@ -233,5 +235,13 @@ public class Engine : Game
         {
             _spriteBatch.DrawString(_font, $"{(int)(3600 * gameTime.ElapsedGameTime.TotalSeconds)}", origin, Color.Beige);
         }
+    }
+
+    protected override void OnExiting(object sender, EventArgs args)
+    {
+        base.OnExiting(sender, args);
+
+        Debug.WriteLine("OnExiting!");
+        _editor.SaveTabsToCache();
     }
 }

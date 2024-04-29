@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using TextEditor.Scene;
 
 namespace TextEditor;
@@ -84,7 +85,7 @@ public class Engine : Game
         ['2'] = '@',
         ['3'] = '#',
         ['4'] = '$',
-        //['5'] = '%',
+        ['5'] = '%',
         ['6'] = '^',
         ['7'] = '&',
         ['8'] = '*',
@@ -149,11 +150,20 @@ public class Engine : Game
     protected override void Update(GameTime gameTime)
     {
         KeyboardState keyboardState = Keyboard.GetState();
-        if (keyboardState.IsKeyDown(Keys.Escape)) { Exit(); }
+        Keys[] pressedKeys = keyboardState.GetPressedKeys();
 
-        foreach (Keys key in keyboardState.GetPressedKeys())
+        if (keyboardState.IsKeyDown(Keys.Escape)) 
+        { 
+            Exit();
+        }
+
+        if (keyboardState.IsKeyDown(Keys.Enter)) 
         {
-            Debug.Write(key);
+            _editor.Content.Append(Environment.NewLine);
+        }
+
+        foreach (Keys key in pressedKeys)
+        {
             if (s_charByKey.ContainsKey(key))
             {
                 if (keyboardState.IsKeyDown(Keys.LeftShift) && s_alternateCharByPrimaryChar.ContainsKey(s_charByKey[key]))
@@ -180,13 +190,13 @@ public class Engine : Game
                 }
             }
         }
-        Debug.WriteLine("");
 
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
+        Debug.WriteLine(_editor.Content);
         GraphicsDevice.Clear(_backgroundColor);
 
         // TODO: Add your drawing code here

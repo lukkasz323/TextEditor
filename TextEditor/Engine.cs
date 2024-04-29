@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using TextEditor.Scene;
 
 namespace TextEditor;
@@ -233,5 +234,13 @@ public class Engine : Game
         {
             _spriteBatch.DrawString(_font, $"{(int)(3600 * gameTime.ElapsedGameTime.TotalSeconds)}", origin, Color.Beige);
         }
+    }
+
+    protected override void OnExiting(object sender, EventArgs args)
+    {
+        base.OnExiting(sender, args);
+
+        Debug.WriteLine("OnExiting!");
+        _editor.SaveTabsToCache();
     }
 }

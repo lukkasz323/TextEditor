@@ -7,6 +7,7 @@ namespace TextEditor.Scene;
 
 internal class Editor
 {
+    private static readonly string s_cacheDirectoryName = "editor_cache";
 
     internal List<Tab> Tabs = new();
     internal int CurrentTabNumber { get; set; }
@@ -24,9 +25,9 @@ internal class Editor
         };
         RelocateDropdowns();
 
-        string cacheDirectoryName = "editor_cache";
-        DirectoryInfo cacheDirectory = Directory.CreateDirectory(cacheDirectoryName);
-        LoadCachedTabs(cacheDirectory);
+        
+        DirectoryInfo cacheDirectory = Directory.CreateDirectory(s_cacheDirectoryName);
+        LoadTabsFromCache(cacheDirectory);
 
         void RelocateDropdowns()
         {
@@ -42,16 +43,22 @@ internal class Editor
             }
         }
 
-        void LoadCachedTabs(DirectoryInfo cacheDirectory)
+        void LoadTabsFromCache(DirectoryInfo cacheDirectory)
         {
             FileInfo[] cachedFiles = cacheDirectory.GetFiles();
             foreach (FileInfo cachedFile in cachedFiles)
             {
                 string content = File.ReadAllText(cachedFile.FullName);
-                Tabs.Add(new Tab(content));
+                Tabs.Add(new Tab(content, cachedFile.Name));
             }
         }
+    }
 
-
+    internal void SaveTabsToCache()
+    {
+        foreach (Tab tab in Tabs)
+        {
+            File.WriteAllText($"{s_cacheDirectoryName}\\{tab.FileNameWithExtension}", tab.Content.ToString());
+        }
     }
 }
